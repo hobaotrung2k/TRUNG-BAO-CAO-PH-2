@@ -182,6 +182,33 @@ ss.setdefault("msg_actions", list(DEFAULT_MSG_ACTIONS))
 ss.setdefault("lead_actions", list(DEFAULT_LEAD_ACTIONS))
 
 # ----------------------------------------------------------------------------
+# ĐĂNG NHẬP (bảo mật)
+# ----------------------------------------------------------------------------
+def require_login():
+    pw = st.secrets.get("app_password", "")
+    if not pw:
+        return  # chưa đặt mật khẩu -> app mở bình thường
+    if st.session_state.get("auth_ok"):
+        with st.sidebar:
+            if st.button("Đăng xuất"):
+                st.session_state["auth_ok"] = False
+                st.rerun()
+        return
+    st.markdown("## 🔒 Báo cáo FB Ads — Á Âu")
+    st.caption("Nhập mật khẩu để xem số liệu.")
+    pwd = st.text_input("Mật khẩu", type="password")
+    if st.button("Đăng nhập"):
+        if pwd == pw:
+            st.session_state["auth_ok"] = True
+            st.rerun()
+        else:
+            st.error("Sai mật khẩu. Thử lại.")
+    st.stop()
+
+
+require_login()
+
+# ----------------------------------------------------------------------------
 # PHẦN CHỌN TÀI KHOẢN + THỜI GIAN
 # ----------------------------------------------------------------------------
 st.markdown("### Tài khoản quảng cáo")
